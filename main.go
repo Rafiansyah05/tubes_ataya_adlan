@@ -396,7 +396,7 @@ func cariSaranKesehatan() {
 			if daftarSaran[tengah].Topik == kataKunci {
 				fmt.Printf("- Topik: %s\n  Saran: %s\n", daftarSaran[tengah].Topik, daftarSaran[tengah].IsiSaran)
 				ditemukan = true
-				// Cek ke kiri untuk topik yang sama
+		
 				var l int = tengah - 1
 				for l >= 0 && daftarSaran[l].Topik == kataKunci {
 					fmt.Printf("- Topik: %s\n  Saran: %s\n", daftarSaran[l].Topik, daftarSaran[l].IsiSaran)
@@ -515,7 +515,7 @@ func urutSeleksiInteraksi(A *tabInteraksi, n int, kriteria string, menaik bool) 
 		for j = i + 1; j < n; j++ {
 			var kondisiBanding bool = false
 			if kriteria == "1" { 
-				if menaik { // A-Z
+				if menaik { 
 					kondisiBanding = A[j].Mood < A[indeksEkstremum].Mood
 				} else { 
 					kondisiBanding = A[j].Mood > A[indeksEkstremum].Mood
@@ -551,7 +551,7 @@ func urutSisipInteraksi(A *tabInteraksi, n int, kriteria string, menaik bool) {
 
 		var kondisiGeser bool = false
 		if j >= 0 {
-			if kriteria == "1" { // Mood
+			if kriteria == "1" { 
 				if menaik { kondisiGeser = A[j].Mood > kunci.Mood
 				} else { kondisiGeser = A[j].Mood < kunci.Mood }
 			} else if kriteria == "2" { // Urgensi
@@ -566,7 +566,7 @@ func urutSisipInteraksi(A *tabInteraksi, n int, kriteria string, menaik bool) {
 		for j >= 0 && kondisiGeser {
 			A[j+1] = A[j]
 			j--
-			kondisiGeser = false // Reset
+			kondisiGeser = false 
 			if j >= 0 {
 				if kriteria == "1" {
 					if menaik { kondisiGeser = A[j].Mood > kunci.Mood 
