@@ -2,43 +2,46 @@ package main
 
 import "fmt"
 
-const NMAX int = 100 
+const NMAX int = 100
 
 type Interaction struct {
 	Mood    string
-	Message string
+	Message string 
 }
 
 type SaranKesehatan struct {
-	Topik   string
-	IsiSaran string
+	Topik    string 
+	IsiSaran string 
 }
 
-type tabInteraksi [NMAX]Interaction 
-var jumlahInteraksi int = 0
+type tabInteraksi [NMAX]Interaction
+var jumlahInteraksi int = 0 
 
 type tabSaran [NMAX]SaranKesehatan
-var daftarSaran tabSaran
-var jumlahSaran int = 0
+var daftarSaran tabSaran    
+var jumlahSaran int = 0    
 
-func main() {
-	var name string
-	var tbInter tabInteraksi 
+func utama() {
+	var namaPengguna string
+	var riwayatInteraksiPengguna tabInteraksi
 
-	initDaftarSaran()
+	inisialisasiDaftarSaran() 
+
+	// Judul Aplikasi
+
 	fmt.Println("\n========== CHATBOT KESEHATAN MENTAL ==========")
 	fmt.Println("Halo! Saya adalah teman bicara untuk kesehatan mental.")
 	fmt.Println("\nSebelum kita mulai, boleh saya tahu namamu?")
 	fmt.Print("> ")
-	fmt.Scanln(&name)
+	fmt.Scanln(&namaPengguna)
 
-	fmt.Printf("\nHalo, %s! 😊\n", name)
+	fmt.Printf("\nHalo, %s! 😊\n", namaPengguna)
 
-	var sessionActive bool = true
-	for sessionActive {
+	var sesiAktif bool = true
+	for sesiAktif {
 		var pilihanMenuUtama string
-		var userMessage string
-		var mood string = "" 
+		var pesanPengguna string
+		var suasanaHatiPengguna string = "" 
 
 		fmt.Println("\nBagaimana perasaanmu hari ini? (1-5, atau 6 untuk Opsi Lanjutan/Keluar)")
 		fmt.Println("1. Bahagia 😊")
@@ -51,67 +54,67 @@ func main() {
 		fmt.Scanln(&pilihanMenuUtama)
 
 		if pilihanMenuUtama == "6" {
-			sessionActive = handleOpsiLanjutan(&tbInter) 
-			if !sessionActive { 
-				break 
+			sesiAktif = tanganiOpsiLanjutan(&riwayatInteraksiPengguna)
+			if !sesiAktif { 
+				break
 			}
-			continue
+			continue 
 		}
 
 		switch pilihanMenuUtama {
 		case "1":
-			mood = "bahagia"
+			suasanaHatiPengguna = "bahagia"
 			fmt.Println("Wah, senang mendengarnya! Ada cerita menyenangkan apa hari ini?")
 			fmt.Println("(Notes : Gunakan titik sebagai spasi. Contoh: Aku.habis.makan.enak)")
 			fmt.Print("> ")
-			fmt.Scanln(&userMessage)
+			fmt.Scanln(&pesanPengguna)
 		case "2":
-			mood = "sedih"
+			suasanaHatiPengguna = "sedih"
 			fmt.Println("Aku di sini untuk mendengarmu. Mau ceritakan apa yang membuatmu sedih?")
 			fmt.Println("(Notes : Gunakan titik sebagai spasi. Contoh: Aku.habis.diputusin.pacar)")
 			fmt.Print("> ")
-			fmt.Scanln(&userMessage)
+			fmt.Scanln(&pesanPengguna)
 		case "3":
-			mood = "cemas"
+			suasanaHatiPengguna = "cemas"
 			fmt.Println("Kecemasan bisa terasa berat. Apa yang sedang mengganggu pikiranmu?")
 			fmt.Println("(Notes : Gunakan titik sebagai spasi. Contoh: Besok.aku.akan.dikaderisasi)")
 			fmt.Print("> ")
-			fmt.Scanln(&userMessage)
+			fmt.Scanln(&pesanPengguna)
 		case "4":
-			mood = "marah"
+			suasanaHatiPengguna = "marah"
 			fmt.Println("Marah adalah perasaan yang wajar. Apa yang memicunya?")
 			fmt.Println("(Notes : Gunakan titik sebagai spasi. Contoh: Dia.menyebalkan)")
 			fmt.Print("> ")
-			fmt.Scanln(&userMessage)
+			fmt.Scanln(&pesanPengguna)
 		case "5":
-			mood = "lelah"
+			suasanaHatiPengguna = "lelah"
 			fmt.Println("Istirahat itu penting. Apakah kamu merasa terbebani akhir-akhir ini?")
 			fmt.Println("(Notes : Gunakan titik sebagai spasi. Contoh: Baru.pulang.jogging)")
 			fmt.Print("> ")
-			fmt.Scanln(&userMessage)
+			fmt.Scanln(&pesanPengguna)
 		default:
 			fmt.Println("Maaf, aku tidak mengerti pilihanmu.")
-			continue
+			continue 
 		}
 
-		if mood != "" && userMessage != "" {
-			addInteraction(&tbInter, mood, userMessage)
-			getMoodResponse(mood)
-			suggestActivity(mood)
-			offerRelaxation(mood)
-		} else if mood != "" && userMessage == "" {
+
+		if suasanaHatiPengguna != "" && pesanPengguna != "" {
+			tambahInteraksi(&riwayatInteraksiPengguna, suasanaHatiPengguna, pesanPengguna)
+			dapatkanResponSuasanaHati(suasanaHatiPengguna)
+			sarankanAktivitas(suasanaHatiPengguna)
+			tawarkanRelaksasi(suasanaHatiPengguna)
+		} else if suasanaHatiPengguna != "" && pesanPengguna == "" {
 			fmt.Println("Kamu belum menceritakan apa-apa. Ceritakanlah!")
 		}
 	}
 
-	fmt.Println("\nTerima kasih sudah berbicara denganku hari ini, ", name, ".")
+	fmt.Println("\nTerima kasih sudah berbicara denganku hari ini, ", namaPengguna, ".")
 	fmt.Println("Ingatlah: Perasaanmu valid dan penting.")
 	fmt.Println("Sampai jumpa lagi! ❤")
 }
 
-func handleOpsiLanjutan(A *tabInteraksi) bool {
+func tanganiOpsiLanjutan(A *tabInteraksi) bool {
 	var pilihanMenuLanjutan string
-	var continueSession bool = true
 
 	for {
 		fmt.Println("\n--- Opsi Lanjutan & Riwayat ---")
@@ -127,30 +130,30 @@ func handleOpsiLanjutan(A *tabInteraksi) bool {
 
 		switch pilihanMenuLanjutan {
 		case "1":
-			printHistory(*A)
+			cetakRiwayat(*A)
 		case "2":
-			ubahInteraksiSpesifik(A)
+			ubahInteraksiTertentu(A)
 		case "3":
-			hapusInteraksiSpesifik(A)
+			hapusInteraksiTertentu(A)
 		case "4":
 			cariSaranKesehatan()
 		case "5":
 			urutkanRiwayatInteraksi(A)
 		case "6":
-			return true
+			return true 
 		case "7":
 			return false 
 		default:
 			fmt.Println("Pilihan tidak dikenali. Silakan coba lagi.")
 		}
 	}
-	return continueSession 
+
 }
 
-func addInteraction(A *tabInteraksi, mood string, message string) {
+func tambahInteraksi(A *tabInteraksi, suasanaHati string, pesan string) {
 	if jumlahInteraksi < NMAX {
-		A[jumlahInteraksi].Mood = mood
-		A[jumlahInteraksi].Message = message
+		A[jumlahInteraksi].Mood = suasanaHati
+		A[jumlahInteraksi].Message = pesan
 		jumlahInteraksi++
 		fmt.Println("\n(Interaksi dicatat.)")
 	} else {
@@ -158,8 +161,8 @@ func addInteraction(A *tabInteraksi, mood string, message string) {
 	}
 }
 
-func getMoodResponse(mood string) {
-	switch mood {
+func dapatkanResponSuasanaHati(suasanaHati string) {
+	switch suasanaHati {
 	case "bahagia":
 		fmt.Println("\nSenang sekali kamu merasa bahagia hari ini!")
 		fmt.Println("Ingatlah momen-momen seperti ini ketika hari-hari terasa sulit.")
@@ -180,20 +183,20 @@ func getMoodResponse(mood string) {
 	}
 }
 
-func suggestActivity(mood string) {
-	if mood == "bahagia" {
+func sarankanAktivitas(suasanaHati string) {
+	if suasanaHati == "bahagia" {
 		fmt.Println("Lanjutkan hal yang membuatmu bahagia!")
 		return
 	}
 
-	var input string
+	var inputPengguna string
 	fmt.Println("\nButuh saran aktivitas untuk membantumu merasa lebih baik? (ya/tidak)")
 	fmt.Print("> ")
-	fmt.Scanln(&input)
+	fmt.Scanln(&inputPengguna)
 
-	if input == "ya" {
+	if inputPengguna == "ya" {
 		fmt.Println("\nBerdasarkan perasaanmu, berikut beberapa aktivitas yang bisa membantu:")
-		switch mood {
+		switch suasanaHati {
 		case "sedih":
 			fmt.Println("- Dengarkan musik yang menenangkan atau uplifting.")
 			fmt.Println("- Tulis perasaanmu dalam jurnal, biarkan semua keluar.")
@@ -216,17 +219,17 @@ func suggestActivity(mood string) {
 	}
 }
 
-func offerRelaxation(mood string) {
-	var input string
-	if mood == "bahagia" {
-		return
+func tawarkanRelaksasi(suasanaHati string) {
+	var inputPengguna string
+	if suasanaHati == "bahagia" {
+		return 
 	}
 
 	fmt.Println("\nMaukah kamu mencoba teknik relaksasi sederhana bersamaku? (ya/tidak)")
 	fmt.Print("> ")
-	fmt.Scanln(&input)
+	fmt.Scanln(&inputPengguna)
 
-	if input == "ya" {
+	if inputPengguna == "ya" {
 		fmt.Println("\nBaiklah. Sekarang, pejamkan matamu jika nyaman.")
 		fmt.Println("Tarik napas dalam melalui hidung... hitung sampai empat...")
 		fmt.Println("Tahan napasmu... hitung sampai tujuh...")
@@ -235,7 +238,7 @@ func offerRelaxation(mood string) {
 	}
 }
 
-func printHistory(A tabInteraksi) {
+func cetakRiwayat(A tabInteraksi) {
 	if jumlahInteraksi == 0 {
 		fmt.Println("\nBelum ada riwayat interaksi.")
 		return
@@ -249,14 +252,14 @@ func printHistory(A tabInteraksi) {
 	fmt.Println("-------------------------")
 }
 
-func ubahInteraksiSpesifik(A *tabInteraksi) {
+func ubahInteraksiTertentu(A *tabInteraksi) {
 	if jumlahInteraksi == 0 {
 		fmt.Println("\nBelum ada riwayat untuk diubah.")
 		return
 	}
-	printHistory(*A)
+	cetakRiwayat(*A) 
 	var nomorUbah int
-	var newMood, newMessage string
+	var suasanaHatiBaru, pesanBaru string
 
 	fmt.Print("Masukkan nomor interaksi yang ingin diubah: ")
 	fmt.Scanln(&nomorUbah) 
@@ -265,85 +268,78 @@ func ubahInteraksiSpesifik(A *tabInteraksi) {
 		fmt.Println("Nomor interaksi tidak valid.")
 		return
 	}
-	var indexToChange int = nomorUbah - 1
+	var indeksUntukDiubah int = nomorUbah - 1 
 
 	fmt.Printf("Mengubah interaksi ke-%d:\n", nomorUbah)
-	fmt.Printf("Mood saat ini: %s. Masukkan mood baru (atau '-' untuk tidak mengubah): ", A[indexToChange].Mood)
-	fmt.Scanln(&newMood)
-	fmt.Printf("Pesan saat ini: %s. Masukkan pesan baru (atau '-' untuk tidak mengubah): ", A[indexToChange].Message)
+	fmt.Printf("Mood saat ini: %s. Masukkan mood baru (atau '-' untuk tidak mengubah): ", A[indeksUntukDiubah].Mood)
+	fmt.Scanln(&suasanaHatiBaru)
+	fmt.Printf("Pesan saat ini: %s. Masukkan pesan baru (atau '-' untuk tidak mengubah): ", A[indeksUntukDiubah].Message)
 	fmt.Println("(Notes : Gunakan titik sebagai spasi. Contoh: Cerita.Baru)")
-	fmt.Scanln(&newMessage)
+	fmt.Scanln(&pesanBaru)
 
-	if newMood != "-" && newMood != "" {
-		A[indexToChange].Mood = newMood
+
+	if suasanaHatiBaru != "-" && suasanaHatiBaru != "" {
+		A[indeksUntukDiubah].Mood = suasanaHatiBaru
 	}
-	if newMessage != "-" && newMessage != "" {
-		A[indexToChange].Message = newMessage
+
+	if pesanBaru != "-" && pesanBaru != "" {
+		A[indeksUntukDiubah].Message = pesanBaru
 	}
+
 	fmt.Println("Interaksi berhasil diubah.")
 }
 
-func hapusInteraksiSpesifik(A *tabInteraksi) {
+func hapusInteraksiTertentu(A *tabInteraksi) {
 	if jumlahInteraksi == 0 {
 		fmt.Println("\nBelum ada riwayat untuk dihapus.")
 		return
 	}
-	printHistory(*A) 
+	cetakRiwayat(*A) 
 	var nomorHapus int
 
 	fmt.Print("Masukkan nomor interaksi yang ingin dihapus: ")
 	var inputStr string
 	fmt.Scanln(&inputStr)
-	
-	var errConv bool = false
+
+	var kesalahanKonversi bool = false
 	nomorHapus = 0
 	if len(inputStr) > 0 {
 		var temp int = 0
-		var sign int = 1
-		var start int = 0
+		
+		var mulai int = 0
 
-		if inputStr[0] == '-' {
-			errConv = true
-		} else if inputStr[0] == '+' {
-			start = 1
-		}
-		for k := start; k < len(inputStr); k++ {
+		if inputStr[0] == '+' { mulai = 1 }
+
+		for k := mulai; k < len(inputStr); k++ {
 			if inputStr[k] >= '0' && inputStr[k] <= '9' {
 				temp = temp*10 + int(inputStr[k]-'0')
 			} else {
-				errConv = true
+				kesalahanKonversi = true
 				break
 			}
 		}
-		if !errConv {
-			nomorHapus = temp * sign
+		if !kesalahanKonversi {
+			nomorHapus = temp
 		}
-		
 	} else {
-		errConv = true
+		kesalahanKonversi = true
 	}
 
-
-	if errConv || nomorHapus < 1 || nomorHapus > jumlahInteraksi {
+	if kesalahanKonversi || nomorHapus < 1 || nomorHapus > jumlahInteraksi {
 		fmt.Println("Nomor interaksi tidak valid.")
 		return
 	}
 
-	var indexToDelete int = nomorHapus - 1
-	
+	var indeksUntukDihapus int = nomorHapus - 1 
 	var i int
-	for i = indexToDelete; i < jumlahInteraksi-1; i++ {
+	for i = indeksUntukDihapus; i < jumlahInteraksi-1; i++ {
 		(*A)[i] = (*A)[i+1]
 	}
-
 	jumlahInteraksi--
 	fmt.Println("Interaksi berhasil dihapus.")
 }
 
-
-
-func initDaftarSaran() {
-
+func inisialisasiDaftarSaran() {
 	if jumlahSaran < NMAX {
 		daftarSaran[jumlahSaran] = SaranKesehatan{"stres", "Cobalah teknik pernapasan 4-7-8: tarik napas 4 hitungan, tahan 7, hembuskan 8."}; jumlahSaran++
 	}
@@ -369,8 +365,8 @@ func cariSaranKesehatan() {
 	var pilihanCari, kataKunci string
 	fmt.Println("\n--- Cari Saran Kesehatan Mental ---")
 	fmt.Println("Pilih metode pencarian:")
-	fmt.Println("1. Sequential Search")
-	fmt.Println("2. Binary Search (Data harus diurutkan berdasarkan Topik dulu)")
+	fmt.Println("1. Pencarian Sekuensial")
+	fmt.Println("2. Pencarian Biner (Data harus diurutkan berdasarkan Topik dulu)")
 	fmt.Print("> ")
 	fmt.Scanln(&pilihanCari)
 
@@ -379,43 +375,44 @@ func cariSaranKesehatan() {
 
 	var ditemukan bool = false
 	if pilihanCari == "1" {
-		fmt.Println("\nHasil Sequential Search untuk '", kataKunci, "':")
+		fmt.Println("\nHasil Pencarian Sekuensial untuk '", kataKunci, "':")
 		var i int
 		for i = 0; i < jumlahSaran; i++ {
-
-			if stringContains(daftarSaran[i].Topik, kataKunci) || stringContains(daftarSaran[i].IsiSaran, kataKunci) {
+			if stringMengandung(daftarSaran[i].Topik, kataKunci) || stringMengandung(daftarSaran[i].IsiSaran, kataKunci) {
 				fmt.Printf("- Topik: %s\n  Saran: %s\n", daftarSaran[i].Topik, daftarSaran[i].IsiSaran)
 				ditemukan = true
 			}
 		}
 	} else if pilihanCari == "2" {
-		urutkanDaftarSaranByTopik(&daftarSaran, jumlahSaran) 
-		fmt.Println("\nHasil Binary Search untuk Topik '", kataKunci, "':")
-		var low int = 0
-		var high int = jumlahSaran - 1
-		var mid int
-		for low <= high {
-			mid = low + (high-low)/2
-			if daftarSaran[mid].Topik == kataKunci {
-				fmt.Printf("- Topik: %s\n  Saran: %s\n", daftarSaran[mid].Topik, daftarSaran[mid].IsiSaran)
-				ditemukan = true
 
-				var l int = mid -1
-				for l >=0 && daftarSaran[l].Topik == kataKunci {
+		urutkanDaftarSaranBerdasarkanTopik(&daftarSaran, jumlahSaran) 
+		fmt.Println("\nHasil Pencarian Biner untuk Topik '", kataKunci, "':")
+
+		var rendah int = 0
+		var tinggi int = jumlahSaran - 1
+		var tengah int
+		for rendah <= tinggi {
+			tengah = rendah + (tinggi-rendah)/2
+			if daftarSaran[tengah].Topik == kataKunci {
+				fmt.Printf("- Topik: %s\n  Saran: %s\n", daftarSaran[tengah].Topik, daftarSaran[tengah].IsiSaran)
+				ditemukan = true
+				// Cek ke kiri untuk topik yang sama
+				var l int = tengah - 1
+				for l >= 0 && daftarSaran[l].Topik == kataKunci {
 					fmt.Printf("- Topik: %s\n  Saran: %s\n", daftarSaran[l].Topik, daftarSaran[l].IsiSaran)
 					l--
 				}
-		
-				var r int = mid + 1
+
+				var r int = tengah + 1
 				for r < jumlahSaran && daftarSaran[r].Topik == kataKunci {
 					fmt.Printf("- Topik: %s\n  Saran: %s\n", daftarSaran[r].Topik, daftarSaran[r].IsiSaran)
 					r++
 				}
-				break
-			} else if daftarSaran[mid].Topik < kataKunci {
-				low = mid + 1
+				break 
+			} else if daftarSaran[tengah].Topik < kataKunci {
+				rendah = tengah + 1
 			} else {
-				high = mid - 1
+				tinggi = tengah - 1
 			}
 		}
 	} else {
@@ -428,38 +425,39 @@ func cariSaranKesehatan() {
 	}
 }
 
-func stringContains(haystack, needle string) bool {
-	var n int = len(haystack)
-	var m int = len(needle)
-	if m == 0 { return true }
+func stringMengandung(teksUtama, teksCari string) bool {
+	var n int = len(teksUtama)
+	var m int = len(teksCari)
+	if m == 0 { return true } 
 	if m > n { return false }
 	var i, j int
 	for i = 0; i <= n-m; i++ {
-		var match bool = true
+		var cocok bool = true
 		for j = 0; j < m; j++ {
-			if haystack[i+j] != needle[j] {
-				match = false
+			if teksUtama[i+j] != teksCari[j] {
+				cocok = false
 				break
 			}
 		}
-		if match {
+		if cocok {
 			return true
 		}
 	}
 	return false
 }
 
-func urutkanDaftarSaranByTopik(A *tabSaran, n int) {
+func urutkanDaftarSaranBerdasarkanTopik(A *tabSaran, n int) {
 	var i, j int
-	var key SaranKesehatan
+	var kunci SaranKesehatan
 	for i = 1; i < n; i++ {
-		key = A[i]
+		kunci = A[i]
 		j = i - 1
-		for j >= 0 && A[j].Topik > key.Topik {
+	
+		for j >= 0 && A[j].Topik > kunci.Topik {
 			A[j+1] = A[j]
 			j--
 		}
-		A[j+1] = key
+		A[j+1] = kunci 
 	}
 }
 
@@ -471,126 +469,116 @@ func urutkanRiwayatInteraksi(A *tabInteraksi) {
 	var pilihanUrut, kriteriaUrut string
 	fmt.Println("\n--- Urutkan Riwayat Interaksi ---")
 	fmt.Println("Pilih metode pengurutan:")
-	fmt.Println("1. Selection Sort")
-	fmt.Println("2. Insertion Sort")
+	fmt.Println("1. Urut Seleksi (Selection Sort)")
+	fmt.Println("2. Urut Sisip (Insertion Sort)")
 	fmt.Print("> ")
 	fmt.Scanln(&pilihanUrut)
 
 	fmt.Println("Urutkan berdasarkan:")
-	fmt.Println("1. Mood (A-Z)")
-	fmt.Println("2. Tingkat Urgensi (Tinggi ke Rendah)")
-
+	fmt.Println("1. Mood (A-Z)") 
+	fmt.Println("2. Tingkat Urgensi (Tinggi ke Rendah)") 
 	fmt.Print("> ")
 	fmt.Scanln(&kriteriaUrut)
 
-	var ascending bool = true 
-
-	if kriteriaUrut == "2" { 
-		ascending = false
+	var menaik bool = true
+	if kriteriaUrut == "2" {
+		menaik = false
 	}
 
-
-	if pilihanUrut == "1" { 
-		selectionSortInteraksi(A, jumlahInteraksi, kriteriaUrut, ascending)
-	} else if pilihanUrut == "2" { 
-		insertionSortInteraksi(A, jumlahInteraksi, kriteriaUrut, ascending)
+	if pilihanUrut == "1" {
+		urutSeleksiInteraksi(A, jumlahInteraksi, kriteriaUrut, menaik)
+	} else if pilihanUrut == "2" {
+		urutSisipInteraksi(A, jumlahInteraksi, kriteriaUrut, menaik)
 	} else {
 		fmt.Println("Pilihan metode tidak valid.")
 		return
 	}
 	fmt.Println("\nRiwayat setelah diurutkan:")
-	printHistory(*A)
+	cetakRiwayat(*A)
 }
 
-func getUrgensiScore(mood string) int {
-	switch mood {
-	case "marah", "cemas": return 3
-	case "sedih": return 2      
-	case "lelah": return 1         
-	case "bahagia": return 0        
-	default: return -1             
+func dapatkanSkorUrgensi(suasanaHati string) int {
+	switch suasanaHati {
+	case "marah", "cemas": return 3 
+	case "sedih": return 2          
+	case "lelah": return 1          
+	case "bahagia": return 0       
+	default: return -1              
 	}
 }
 
-func selectionSortInteraksi(A *tabInteraksi, n int, kriteria string, ascending bool) {
-	var i, j, extremumIdx int
+func urutSeleksiInteraksi(A *tabInteraksi, n int, kriteria string, menaik bool) {
+	var i, j, indeksEkstremum int
 	var temp Interaction
 	for i = 0; i < n-1; i++ {
-		extremumIdx = i
+		indeksEkstremum = i
 		for j = i + 1; j < n; j++ {
-			var A_j_lebihKecilAtauBesarDariExtremum bool = false
+			var kondisiBanding bool = false
 			if kriteria == "1" { 
-				if ascending { 
-					A_j_lebihKecilAtauBesarDariExtremum = A[j].Mood < A[extremumIdx].Mood
+				if menaik { // A-Z
+					kondisiBanding = A[j].Mood < A[indeksEkstremum].Mood
 				} else { 
-					A_j_lebihKecilAtauBesarDariExtremum = A[j].Mood > A[extremumIdx].Mood
+					kondisiBanding = A[j].Mood > A[indeksEkstremum].Mood
 				}
-			} else if kriteria == "2" { 
-				scoreJ := getUrgensiScore(A[j].Mood)
-				scoreExtremum := getUrgensiScore(A[extremumIdx].Mood)
-				if ascending {
-					A_j_lebihKecilAtauBesarDariExtremum = scoreJ < scoreExtremum
-				} else {
-					A_j_lebihKecilAtauBesarDariExtremum = scoreJ > scoreExtremum
+			} else if kriteria == "2" {
+				skorJ := dapatkanSkorUrgensi(A[j].Mood)
+				skorEkstremum := dapatkanSkorUrgensi(A[indeksEkstremum].Mood)
+				if menaik { 
+					kondisiBanding = skorJ < skorEkstremum
+				} else { 
+					kondisiBanding = skorJ > skorEkstremum
 				}
 			}
 
-			if A_j_lebihKecilAtauBesarDariExtremum {
-				extremumIdx = j
+			if kondisiBanding {
+				indeksEkstremum = j
 			}
 		}
-		if extremumIdx != i {
+		if indeksEkstremum != i { 
 			temp = A[i]
-			A[i] = A[extremumIdx]
-			A[extremumIdx] = temp
+			A[i] = A[indeksEkstremum]
+			A[indeksEkstremum] = temp
 		}
 	}
 }
 
-func insertionSortInteraksi(A *tabInteraksi, n int, kriteria string, ascending bool) {
+func urutSisipInteraksi(A *tabInteraksi, n int, kriteria string, menaik bool) {
 	var i, j int
-	var key Interaction
+	var kunci Interaction
 	for i = 1; i < n; i++ {
-		key = A[i]
+		kunci = A[i]
 		j = i - 1
-		
+
 		var kondisiGeser bool = false
 		if j >= 0 {
-			if kriteria == "1" {
-				if ascending {
-					kondisiGeser = A[j].Mood > key.Mood
-				} else {
-					kondisiGeser = A[j].Mood < key.Mood
-				}
-			} else if kriteria == "2" {
-				scoreJ := getUrgensiScore(A[j].Mood)
-				scoreKey := getUrgensiScore(key.Mood)
-				if ascending {
-					kondisiGeser = scoreJ > scoreKey
-				} else {
-					kondisiGeser = scoreJ < scoreKey
-				}
+			if kriteria == "1" { // Mood
+				if menaik { kondisiGeser = A[j].Mood > kunci.Mood
+				} else { kondisiGeser = A[j].Mood < kunci.Mood }
+			} else if kriteria == "2" { // Urgensi
+				skorJ := dapatkanSkorUrgensi(A[j].Mood)
+				skorKunci := dapatkanSkorUrgensi(kunci.Mood)
+				if menaik { kondisiGeser = skorJ > skorKunci
+				} else { kondisiGeser = skorJ < skorKunci }
 			}
 		}
-
+		
+		
 		for j >= 0 && kondisiGeser {
 			A[j+1] = A[j]
 			j--
-
-			kondisiGeser = false 
-
+			kondisiGeser = false // Reset
 			if j >= 0 {
 				if kriteria == "1" {
-					if ascending { kondisiGeser = A[j].Mood > key.Mood 
-					} else { kondisiGeser = A[j].Mood < key.Mood }
+					if menaik { kondisiGeser = A[j].Mood > kunci.Mood 
+					} else { kondisiGeser = A[j].Mood < kunci.Mood }
 				} else if kriteria == "2" {
-					scoreJ := getUrgensiScore(A[j].Mood)
-					scoreKey := getUrgensiScore(key.Mood)
-					if ascending { kondisiGeser = scoreJ > scoreKey
-					} else { kondisiGeser = scoreJ < scoreKey }
+					skorJ := dapatkanSkorUrgensi(A[j].Mood)
+					skorKunci := dapatkanSkorUrgensi(kunci.Mood)
+					if menaik { kondisiGeser = skorJ > skorKunci
+					} else { kondisiGeser = skorJ < skorKunci }
 				}
 			}
 		}
-		A[j+1] = key
+		A[j+1] = kunci 
 	}
 }
