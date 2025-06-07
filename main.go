@@ -21,7 +21,7 @@ type tabSaran [NMAX]SaranKesehatan
 var daftarSaran tabSaran    
 var jumlahSaran int = 0    
 
-func utama() {
+func main() {
 	var namaPengguna string
 	var riwayatInteraksiPengguna tabInteraksi
 
